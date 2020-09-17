@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
-
 class MainActivity : AppCompatActivity() {
 
     private var pressTime: Long = 0
@@ -16,22 +15,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val layout = main_back
+        activateBackgroudAnimation()
+
+        createQR_Button.setOnClickListener {
+            startActivity(Intent(this@MainActivity, CreateQRActivity::class.java))
+        }
+        scanQR_Button.setOnClickListener {
+            startActivity(Intent(this@MainActivity, ScanQRActivity::class.java))
+        }
+
+    }
+
+    private fun activateBackgroudAnimation() {
+        val layout = main_layout
         val animationDrawable = layout.background as AnimationDrawable
         animationDrawable.setEnterFadeDuration(2000)
         animationDrawable.setExitFadeDuration(2000)
         animationDrawable.start()
-
-        createQR.setOnClickListener {
-            val intent = Intent(this@MainActivity, CreateQR::class.java)
-            startActivity(intent)
-        }
-        scanQR.setOnClickListener {
-            val intent = Intent(this@MainActivity, ScanQR::class.java)
-            startActivity(intent)
-        }
-
     }
+
     override fun onBackPressed() {
         if (System.currentTimeMillis() - pressTime < 2000) {
             finish()

@@ -7,7 +7,7 @@
     android:background="#FFF2A2"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context=".CreateQR">
+    tools:context=".CreateQRActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -25,7 +25,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
-            android:id="@+id/input_url"
+            android:id="@+id/url_EditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -33,11 +33,15 @@
             android:layout_marginRight="4dp"
             android:layout_weight="4"
             android:ems="10"
-            android:gravity="left"
+            android:gravity="start"
             android:hint="@string/input_address"
             android:inputType="textPersonName"
-            android:paddingLeft="8dp"
-            tools:ignore="TextFields" />
+            tools:ignore="TextFields"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="4dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:autofillHints="@string/input_address" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -46,24 +50,24 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/create_button"
+                android:id="@+id/create_Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:background="@drawable/button_box3"
-                android:drawableLeft="@drawable/ic_assignment_turned_in"
+                android:drawableStart="@drawable/ic_assignment_turned_in"
                 android:text="@string/create"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:drawableLeft="@drawable/ic_assignment_turned_in" />
 
             <Button
-                android:id="@+id/clipboard_button"
+                android:id="@+id/clipboard_Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:background="@drawable/button_box3"
+                android:drawableStart="@drawable/ic_attach_file"
                 android:drawableLeft="@drawable/ic_attach_file"
+                android:paddingStart="8dp"
                 android:paddingEnd="8dp"
-                android:paddingRight="8dp"
                 android:text="@string/clipboard"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -71,30 +75,33 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/qrcode"
+        android:id="@+id/qrcode_ImageView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/save_button"
+        app:layout_constraintBottom_toTopOf="@+id/save_Button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        android:contentDescription="@string/qr_code_title" />
 
     <Button
-        android:id="@+id/save_button"
+        android:id="@+id/save_Button"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_marginBottom="50dp"
         android:background="#B3FFFFFF"
         android:drawableLeft="@drawable/ic_save_alt"
-        android:paddingLeft="20dp"
         android:text="@string/save"
         android:textAllCaps="false"
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="10dp" />
+        tools:layout_editor_absoluteX="10dp"
+        android:drawableStart="@drawable/ic_save_alt"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

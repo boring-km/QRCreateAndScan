@@ -11,10 +11,9 @@ import android.widget.Toast
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.android.synthetic.main.activity_scan_qr.*
 
-class ScanQR : AppCompatActivity() {
+class ScanQRActivity : AppCompatActivity() {
 
     private var qrScan: IntentIntegrator? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,10 +21,10 @@ class ScanQR : AppCompatActivity() {
 
         scanning()
 
-        rescan.setOnClickListener {
+        rescan_Button.setOnClickListener {
             scanning()
         }
-        back_button.setOnClickListener {
+        back_Button.setOnClickListener {
             finish()
         }
     }
@@ -42,20 +41,19 @@ class ScanQR : AppCompatActivity() {
         if (result != null) {
             if (result.contents == null) {
                 Toast.makeText(this, "인식못함", Toast.LENGTH_SHORT).show()
-            } else {
-                try {
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(result.contents)))
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Toast.makeText(this, "인터넷 연결 실패!\n클립보드에 읽어온 데이터를 저장합니다.", Toast.LENGTH_SHORT).show()
-                    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clipdata = ClipData.newPlainText("qr_code",result.contents)
-                    clipboard.setPrimaryClip(clipdata)
-                    Toast.makeText(this,"저장된 데이터: $clipdata", Toast.LENGTH_SHORT).show()
-                }
+                return
+            }
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(result.contents)))
+            } catch (e: Exception) {
+                Toast.makeText(this, "인터넷 연결 실패!\n클립보드에 읽어온 데이터를 저장합니다.", Toast.LENGTH_SHORT).show()
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clipData = ClipData.newPlainText("qr_code",result.contents)
+                clipboard.setPrimaryClip(clipData)
+                Toast.makeText(this,"저장된 데이터: $clipData", Toast.LENGTH_SHORT).show()
             }
         } else {
-            super.onActivityResult(requestCode, resultCode, data)
+            super.onActivityResult(requestCode, resultCode, data)   // TODO: 사용 이유 알아내기
         }
     }
 
