@@ -15,18 +15,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        activateBackgroudAnimation()
+        activateBackgroundAnimation()
 
         createQR_Button.setOnClickListener {
             startActivity(Intent(this@MainActivity, CreateQRActivity::class.java))
+            overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_out_anim)
         }
         scanQR_Button.setOnClickListener {
             startActivity(Intent(this@MainActivity, ScanQRActivity::class.java))
+            overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_out_anim)
         }
 
     }
 
-    private fun activateBackgroudAnimation() {
+    private fun activateBackgroundAnimation() {
         val layout = main_layout
         val animationDrawable = layout.background as AnimationDrawable
         animationDrawable.setEnterFadeDuration(2000)

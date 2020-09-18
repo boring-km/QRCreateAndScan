@@ -2,37 +2,32 @@ package com.boring.qrcreateandscan
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.*
 import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.boring.qrcreateandscan.bitmap.BitmapImage
+import com.boring.qrcreateandscan.bitmap.NoneQRCodeImage
+import com.boring.qrcreateandscan.bitmap.QRCodeImage
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlinx.android.synthetic.main.activity_create_qr.*
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 // TODO: QR 코드 이미지 객체를 따로 분리해야 할 지 살펴보기
 @Suppress("DEPRECATION")
 open class CreateQRActivity : AppCompatActivity() {
 
-    private var bitmap: Bitmap? = null
+    private var bitmapImage: BitmapImage = NoneQRCodeImage()
+    private lateinit var bitmap: Bitmap
     private val requestNumber = 1001
 
     @SuppressLint("SimpleDateFormat")
@@ -40,7 +35,7 @@ open class CreateQRActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_qr)
         create_Button.setOnClickListener {
-            execute()
+            createQRCodeImage()
         }
 
         clipboard_Button.setOnClickListener {
@@ -66,20 +61,14 @@ open class CreateQRActivity : AppCompatActivity() {
 
     @SuppressLint("SimpleDateFormat")
     private fun saveQRCodeImage() {
-        if (isStorageWritePermitted()) {
+        if (isNotStorageWritePermitted()) {
             requestStorageWritePermission()
         } else {
-            if (bitmap != null) {
-                val date = Date(System.currentTimeMillis())
-                val time = SimpleDateFormat("yyyy_MM_dd_hh_mm").format(date)
-                saveImage(bitmap!!, time)
-            } else {
-                Toast.makeText(this, "QR 코드를 먼저 생성하세요", Toast.LENGTH_SHORT).show()
-            }
+            bitmapImage.saveImage(bitmap, contentResolver)
         }
     }
 
-    private fun isStorageWritePermitted(): Boolean {
+    private fun isNotStorageWritePermitted(): Boolean {
         return ContextCompat.checkSelfPermission(
             this@CreateQRActivity,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -138,59 +127,24 @@ open class CreateQRActivity : AppCompatActivity() {
         }
     }
 
-    private fun execute() {
+    private fun createQRCodeImage() {
         val url = url_EditText.text.toString()
         val writer = MultiFormatWriter()
         try {
             val matrix = writer.encode(url, BarcodeFormat.QR_CODE, 200, 200)
             val encoder = BarcodeEncoder()
             bitmap = encoder.createBitmap(matrix)
+            bitmapImage = QRCodeImage()
             qrcode_ImageView.setImageBitmap(bitmap)
-
         } catch (e: Exception) {
             Toast.makeText(applicationContext, "error", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun saveImage(bitmap: Bitmap, time: String) {
-
-        val imagePath = File(Environment.getExternalStorageDirectory().absolutePath + "/QR Codes")
-
-        try {
-            if (!imagePath.exists()) {
-                imagePath.mkdirs()
-                Log.d("TAG", "폴더 생성")
-            } else {
-                Log.d("TAG", "폴더 존재")
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        val finalPath = saveToInternalStorage(bitmap, time, imagePath)
-        Log.d("log_path", finalPath.absolutePath)
-        val intent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(finalPath))
-        applicationContext.sendBroadcast(intent)
-        Toast.makeText(this, "QR 코드 이미지가 저장됩니다", Toast.LENGTH_SHORT).show()
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_out_anim)
     }
 
-    private fun saveToInternalStorage(bitmapImage: Bitmap, time: String, file: File): File {
-        Log.d("dir_tag", file.toString())
-        val savePath = File(file, "$time.png")
 
-        var fos: FileOutputStream? = null
-        try {
-            fos = FileOutputStream(savePath)
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            try {
-                fos!!.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-        return savePath
-    }
 }

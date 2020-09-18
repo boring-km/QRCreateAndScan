@@ -32,8 +32,8 @@ class ScanQRActivity : AppCompatActivity() {
     private fun scanning() {
         qrScan = IntentIntegrator(this)
         qrScan!!.setOrientationLocked(false)
-        qrScan!!.setPrompt("QR 코드 스캔")
-        qrScan!!.initiateScan()
+            .setPrompt("QR 코드 스캔")
+            .initiateScan()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -60,5 +60,6 @@ class ScanQRActivity : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
+        overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_out_anim)
     }
 }
