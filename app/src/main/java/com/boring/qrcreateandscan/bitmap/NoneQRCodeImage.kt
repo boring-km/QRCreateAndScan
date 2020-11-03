@@ -7,7 +7,8 @@ class NoneQRCodeImage : BitmapImage() {
     override fun saveImage(
         image: Bitmap,
         contentResolver: ContentResolver
-    ) {
-
+    ): Boolean {
+        return false
     }
+
 }

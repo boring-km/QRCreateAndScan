@@ -8,5 +8,5 @@ abstract class BitmapImage {
     abstract fun saveImage(
         image: Bitmap,
         contentResolver: ContentResolver
-    )
+    ): Boolean
 }

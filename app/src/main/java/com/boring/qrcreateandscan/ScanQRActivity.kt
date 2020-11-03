@@ -29,6 +29,7 @@ class ScanQRActivity : AppCompatActivity() {
         }
     }
 
+    // TODO: 이미지 들어간 QR 이미지 스캔 가능하도록 알아보기
     private fun scanning() {
         qrScan = IntentIntegrator(this)
         qrScan!!.setOrientationLocked(false)

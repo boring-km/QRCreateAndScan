@@ -21,7 +21,7 @@ class QRCodeImage : BitmapImage() {
     override fun saveImage(
         image: Bitmap,
         contentResolver: ContentResolver
-    ) {
+    ): Boolean {
         val imageName = generateImageName()
 
         val values = createImageValues(imageName)
@@ -42,19 +42,20 @@ class QRCodeImage : BitmapImage() {
                 values.put(MediaStore.Images.Media.IS_PENDING, 0)   // Pending 해제
                 contentResolver.update(item, values, null, null)
             }
+            return true
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
             e.printStackTrace()
         }
+        return false
     }
 
     @SuppressLint("SimpleDateFormat")
     private fun generateImageName(): String {
         val dateTime = Date(System.currentTimeMillis())
         val formattedDateTime = SimpleDateFormat("yyyy_MM_dd_hh_mm").format(dateTime)
-        val imageName = "$formattedDateTime.png"
-        return imageName
+        return "$formattedDateTime.png"
     }
 
     private fun getBytes(inputStream: InputStream): ByteArray {

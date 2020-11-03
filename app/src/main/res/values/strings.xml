@@ -9,4 +9,5 @@
     <string name="qr_n_create_qr">QR코드 생성\n(Create QR)</string>
     <string name="qr_n_scan_qr">QR코드 스캔\n(Scan QR)</string>
     <string name="qr_code_title">큐알</string>
+    <string name="load_image">Load Image</string>
 </resources>
