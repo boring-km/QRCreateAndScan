@@ -2,10 +2,15 @@ package com.boring.qrcreateandscan
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.*
 import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Matrix
 import android.os.Bundle
 import android.util.Log
 import android.view.inputmethod.EditorInfo
@@ -17,16 +22,17 @@ import com.boring.qrcreateandscan.bitmap.BitmapImage
 import com.boring.qrcreateandscan.bitmap.NoneQRCodeImage
 import com.boring.qrcreateandscan.bitmap.QRCodeImage
 import com.google.zxing.BarcodeFormat
-import com.google.zxing.MultiFormatWriter
+import com.google.zxing.integration.android.IntentIntegrator.REQUEST_CODE
+import com.google.zxing.qrcode.QRCodeWriter
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlinx.android.synthetic.main.activity_create_qr.*
+import java.io.InputStream
 
 
-// TODO: QR 코드 이미지 객체를 따로 분리해야 할 지 살펴보기
 @Suppress("DEPRECATION")
 open class CreateQRActivity : AppCompatActivity() {
 
-    private var bitmapImage: BitmapImage = NoneQRCodeImage()
+    private var qrImage: BitmapImage = NoneQRCodeImage()
     private lateinit var bitmap: Bitmap
     private val requestNumber = 1001
 
@@ -34,6 +40,7 @@ open class CreateQRActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_qr)
+
         create_Button.setOnClickListener {
             createQRCodeImage()
         }
@@ -46,7 +53,54 @@ open class CreateQRActivity : AppCompatActivity() {
             saveQRCodeImage()
         }
 
+        loadImage_button.setOnClickListener {
+            selectImageFromGallery()
+        }
+
         setEditTextAction()
+    }
+
+    private fun selectImageFromGallery() {
+        if (qrImage is QRCodeImage) {
+            val intent = Intent()
+            intent.type = "image/*"
+            intent.action = Intent.ACTION_GET_CONTENT
+            startActivityForResult(intent, REQUEST_CODE)
+        } else {
+            Toast.makeText(applicationContext, "QR 코드를 먼저 생성해주세요", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            loadImageOnQRCode(data)
+        } else {
+            Toast.makeText(applicationContext, "Canceled!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun loadImageOnQRCode(data: Intent?) {
+        val inputStream: InputStream? = data!!.data?.let { contentResolver.openInputStream(it) }
+        val selectedImage = BitmapFactory.decodeStream(inputStream)
+        inputStream!!.close()
+        bitmap = mergeBitmaps(selectedImage, bitmap)
+        qrcode_ImageView.setImageBitmap(bitmap)
+    }
+
+    open fun mergeBitmaps(logo: Bitmap?, qrcode: Bitmap): Bitmap {
+        val combined =
+            Bitmap.createBitmap(qrcode.width, qrcode.height, qrcode.config)
+        val canvas = Canvas(combined)
+        val canvasWidth: Int = canvas.width
+        val canvasHeight: Int = canvas.height
+        canvas.drawBitmap(qrcode, Matrix(), null)
+        val resizeLogo =
+            Bitmap.createScaledBitmap(logo!!, 50, 50, true)
+        val centreX = (canvasWidth - resizeLogo.width) / 2
+        val centreY = (canvasHeight - resizeLogo.height) / 2
+        canvas.drawBitmap(resizeLogo, centreX.toFloat(), centreY.toFloat(), null)
+        return combined
     }
 
     private fun setEditTextAction() {
@@ -64,7 +118,10 @@ open class CreateQRActivity : AppCompatActivity() {
         if (isNotStorageWritePermitted()) {
             requestStorageWritePermission()
         } else {
-            bitmapImage.saveImage(bitmap, contentResolver)
+            if(qrImage.saveImage(bitmap, contentResolver))
+                Toast.makeText(applicationContext, "저장완료", Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(applicationContext, "실패", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -93,17 +150,15 @@ open class CreateQRActivity : AppCompatActivity() {
         }
     }
 
-    // TODO: when 내부의 의미 파악하기
     private fun copyToClipboard() {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         when {
-            !clipboard.hasPrimaryClip() -> {
-            }
-            !clipboard.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN)!! -> {
-            }
+            !clipboard.hasPrimaryClip() -> {}
+            !clipboard.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN)!! -> {}
             else -> {
                 val item = clipboard.primaryClip?.getItemAt(0)
                 url_EditText.setText(item?.text.toString())
+                create_Button.performClick()
             }
         }
     }
@@ -118,8 +173,7 @@ open class CreateQRActivity : AppCompatActivity() {
                 grantResults.isEmpty() -> {
                     Toast.makeText(applicationContext, "비어있음", Toast.LENGTH_SHORT).show()
                 }
-                grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                }
+                grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED -> {}
                 else -> {
                     Toast.makeText(applicationContext, "승인 실패", Toast.LENGTH_SHORT).show()
                 }
@@ -129,12 +183,13 @@ open class CreateQRActivity : AppCompatActivity() {
 
     private fun createQRCodeImage() {
         val url = url_EditText.text.toString()
-        val writer = MultiFormatWriter()
+        val writer = QRCodeWriter()
         try {
-            val matrix = writer.encode(url, BarcodeFormat.QR_CODE, 200, 200)
+            val matrix = writer.encode(url, BarcodeFormat.QR_CODE, 300, 300)
             val encoder = BarcodeEncoder()
+
             bitmap = encoder.createBitmap(matrix)
-            bitmapImage = QRCodeImage()
+            qrImage = QRCodeImage()
             qrcode_ImageView.setImageBitmap(bitmap)
         } catch (e: Exception) {
             Toast.makeText(applicationContext, "error", Toast.LENGTH_SHORT).show()
@@ -145,6 +200,4 @@ open class CreateQRActivity : AppCompatActivity() {
         super.onBackPressed()
         overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_out_anim)
     }
-
-
 }

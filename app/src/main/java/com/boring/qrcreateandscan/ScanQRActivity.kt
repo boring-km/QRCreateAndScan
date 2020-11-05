@@ -32,6 +32,7 @@ class ScanQRActivity : AppCompatActivity() {
     private fun scanning() {
         qrScan = IntentIntegrator(this)
         qrScan!!.setOrientationLocked(false)
+            .setBarcodeImageEnabled(true)
             .setPrompt("QR 코드 스캔")
             .initiateScan()
     }
