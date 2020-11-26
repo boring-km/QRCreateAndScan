@@ -26,6 +26,7 @@ import kotlinx.android.synthetic.main.activity_create_qr.*
 @Suppress("DEPRECATION")
 open class CreateQRActivity : AppCompatActivity() {
 
+    private var pressTime: Long = 0
     private var bitmapImage: BitmapImage = NoneQRCodeImage()
     private lateinit var bitmap: Bitmap
     private val requestNumber = 1001
@@ -65,6 +66,7 @@ open class CreateQRActivity : AppCompatActivity() {
             requestStorageWritePermission()
         } else {
             bitmapImage.saveImage(bitmap, contentResolver)
+            Toast.makeText(applicationContext, "QR 코드를 저장합니다", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -142,9 +144,12 @@ open class CreateQRActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_out_anim)
+        if (System.currentTimeMillis() - pressTime < 2000) {
+            overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_out_anim)
+            finish()
+        }
+        Toast.makeText(this, "한 번 더 취소하시면 종료됩니다.", Toast.LENGTH_SHORT).show()
+        pressTime = System.currentTimeMillis()
     }
-
 
 }

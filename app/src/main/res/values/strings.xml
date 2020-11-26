@@ -7,6 +7,7 @@
     <string name="save">저장(Save)</string>
     <string name="backward">돌아가기\n(Back)</string>
     <string name="qr_n_create_qr">QR코드 생성\n(Create QR)</string>
-    <string name="qr_n_scan_qr">QR코드 스캔\n(Scan QR)</string>
     <string name="qr_code_title">큐알</string>
+    <string name="qrCreate">QR 생성</string>
+    <string name="clipboardImage">클립보드</string>
 </resources>

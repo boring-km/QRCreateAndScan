@@ -9,39 +9,63 @@
     android:padding="10dp"
     tools:context=".CreateQRActivity">
 
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/button_box3"
+        android:drawableStart="@mipmap/ic_launcher_round"
+        android:drawableLeft="@mipmap/ic_launcher_round"
+        android:drawablePadding="-80dp"
+        android:gravity="center_horizontal"
+        android:paddingLeft="50dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="@string/qrCreate"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingStart="50dp"
+        tools:ignore="RtlSymmetry" />
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:background="#B3FFFFFF"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/button_box3"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView">
+
+        <ImageButton
+            android:id="@+id/clipboard_Button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/button_box3"
+            app:srcCompat="@drawable/ic_attach_file"
+            android:contentDescription="@string/clipboardImage" />
 
         <EditText
             android:id="@+id/url_EditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp"
             android:layout_weight="4"
+            android:autofillHints="@string/input_address"
             android:ems="10"
             android:gravity="start"
             android:hint="@string/input_address"
             android:inputType="textPersonName"
-            tools:ignore="TextFields"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="4dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:autofillHints="@string/input_address" />
+            tools:ignore="TextFields" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -55,21 +79,14 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_box3"
                 android:drawableStart="@drawable/ic_assignment_turned_in"
+                android:drawableLeft="@drawable/ic_assignment_turned_in"
+                android:drawablePadding="-10dp"
+                android:paddingStart="10dp"
+                android:paddingLeft="10dp"
                 android:text="@string/create"
                 android:textSize="12sp"
-                android:drawableLeft="@drawable/ic_assignment_turned_in" />
+                tools:ignore="RtlSymmetry" />
 
-            <Button
-                android:id="@+id/clipboard_Button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/button_box3"
-                android:drawableStart="@drawable/ic_attach_file"
-                android:drawableLeft="@drawable/ic_attach_file"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:text="@string/clipboard"
-                android:textSize="12sp" />
         </LinearLayout>
 
     </LinearLayout>
@@ -78,30 +95,28 @@
         android:id="@+id/qrcode_ImageView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/save_Button"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/button_box3"
+        android:contentDescription="@string/qr_code_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        android:contentDescription="@string/qr_code_title" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <Button
         android:id="@+id/save_Button"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_marginBottom="50dp"
-        android:background="#B3FFFFFF"
+        android:background="@drawable/button_box3"
+        android:drawableStart="@drawable/ic_save_alt"
         android:drawableLeft="@drawable/ic_save_alt"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         android:text="@string/save"
         android:textAllCaps="false"
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="10dp"
-        android:drawableStart="@drawable/ic_save_alt"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
